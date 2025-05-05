@@ -1,0 +1,93 @@
+[
+  {
+    "name": "attack_down_0",
+    "left_top_x": 10,
+    "left_top_y": 20,
+    "width": 100,
+    "height": 50
+  },
+  {
+    "name": "attack_down_1",
+    "left_top_x": 50,
+    "left_top_y": 60,
+    "width": 80,
+    "height": 120
+  },
+  {
+    "name": "attack_down_2",
+    "left_top_x": 150,
+    "left_top_y": 80,
+    "width": 200,
+    "height": 150
+  },
+  {
+    "name": "attack_down_3",
+    "left_top_x": 200,
+    "left_top_y": 200,
+    "width": 75,
+    "height": 75
+  },
+
+  {
+    "name": "attack_up_0",
+    "left_top_x": 200,
+    "left_top_y": 200,
+    "width": 75,
+    "height": 75
+  },
+
+  {
+    "name": "attack_up_1",
+    "left_top_x": 200,
+    "left_top_y": 200,
+    "width": 75,
+    "height": 75
+  },
+
+  {
+    "name": "attack_up_2",
+    "left_top_x": 200,
+    "left_top_y": 200,
+    "width": 75,
+    "height": 75
+  },
+
+  {
+    "name": "attack_up_3",
+    "left_top_x": 200,
+    "left_top_y": 200,
+    "width": 75,
+    "height": 75
+  },
+
+  {
+    "name": "attack_left_0",
+    "left_top_x": 200,
+    "left_top_y": 200,
+    "width": 75,
+    "height": 75
+  },
+  {
+    "name": "attack_left_1",
+    "left_top_x": 200,
+    "left_top_y": 200,
+    "width": 75,
+    "height": 75
+  },
+
+  {
+    "name": "attack_left_2",
+    "left_top_x": 200,
+    "left_top_y": 200,
+    "width": 75,
+    "height": 75
+  },
+
+  {
+    "name": "attack_left_3",
+    "left_top_x": 200,
+    "left_top_y": 200,
+    "width": 75,
+    "height": 75
+  }
+]
