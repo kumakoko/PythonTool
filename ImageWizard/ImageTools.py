@@ -192,6 +192,14 @@ def convert_single_file(input_file, output_file, transparent_color, scale):
     return rgba_img
 
 
+# 从一张大图片中切出一块图片出来并保存
+# entire_img 整块图片的img
+def crop_one_tile_from_entire_image(entire_img,left_top_x,left_top_y,tile_w,tile_h,tile_file_path):
+    # 切割图块
+    tile_img = entire_img.crop((left_top_x, left_top_y, left_top_x+tile_w, left_top_y+tile_h))
+    tile_img.save(tile_file_path)
+
+
 # 将图片切割成指定尺寸的图块，并保存为单独文件。
 # 参数:
 # image : 输入图片路径

@@ -17,9 +17,10 @@ import wx.xrc
 class MainDialog ( wx.Dialog ):
 
 	def __init__( self, parent ):
-		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = wx.EmptyString, pos = wx.DefaultPosition, size = wx.Size( 1039,705 ), style = wx.DEFAULT_DIALOG_STYLE )
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"ImageWizard--图片处理百宝箱", pos = wx.DefaultPosition, size = wx.Size( 1039,705 ), style = wx.DEFAULT_DIALOG_STYLE|wx.MINIMIZE_BOX )
 
 		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
+		self.SetExtraStyle( wx.DIALOG_EX_METAL )
 
 		bSizer3 = wx.BoxSizer( wx.VERTICAL )
 
@@ -77,16 +78,19 @@ class MainDialog ( wx.Dialog ):
 		bSizer8 = wx.BoxSizer( wx.HORIZONTAL )
 
 		m_listBoxOutputFilesChoices = []
-		self.m_listBoxOutputFiles = wx.ListBox( self.m_panelBatchConvert, wx.ID_ANY, wx.DefaultPosition, wx.Size( 500,100 ), m_listBoxOutputFilesChoices, wx.LB_HSCROLL )
+		self.m_listBoxOutputFiles = wx.ListBox( self.m_panelBatchConvert, wx.ID_ANY, wx.DefaultPosition, wx.Size( 440,100 ), m_listBoxOutputFilesChoices, wx.LB_HSCROLL )
 		bSizer8.Add( self.m_listBoxOutputFiles, 0, wx.ALL, 5 )
 
 		bSizer92 = wx.BoxSizer( wx.VERTICAL )
 
-		self.m_filePickerLoadClipInfoFile = wx.FilePickerCtrl( self.m_panelBatchConvert, wx.ID_ANY, wx.EmptyString, u"Select a file", u"*.*", wx.DefaultPosition, wx.DefaultSize, wx.FLP_OPEN )
-		bSizer92.Add( self.m_filePickerLoadClipInfoFile, 0, wx.ALL, 5 )
+		self.m_buttonAddProcessFiles = wx.Button( self.m_panelBatchConvert, wx.ID_ANY, u"<-添加已处理的图片", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer92.Add( self.m_buttonAddProcessFiles, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
+
+		self.m_buttonLoadClipInfoFile = wx.Button( self.m_panelBatchConvert, wx.ID_ANY, u"打开图片裁切信息文件->", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer92.Add( self.m_buttonLoadClipInfoFile, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
 
 		self.m_buttonDoClip = wx.Button( self.m_panelBatchConvert, wx.ID_ANY, u"执行切片", wx.DefaultPosition, wx.DefaultSize, 0 )
-		bSizer92.Add( self.m_buttonDoClip, 0, wx.ALL, 5 )
+		bSizer92.Add( self.m_buttonDoClip, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
 
 
 		bSizer8.Add( bSizer92, 1, wx.EXPAND, 5 )
@@ -223,7 +227,8 @@ class MainDialog ( wx.Dialog ):
 		self.Centre( wx.BOTH )
 
 		# Connect Events
-		self.m_filePickerLoadClipInfoFile.Bind( wx.EVT_FILEPICKER_CHANGED, self.OnFilePickerLoadClipInfoFileChanged )
+		self.m_buttonAddProcessFiles.Bind( wx.EVT_BUTTON, self.OnButtonAddProcessFilesClicked )
+		self.m_buttonLoadClipInfoFile.Bind( wx.EVT_BUTTON, self.OnButtonLoadClipInfoFileClicked )
 		self.m_buttonDoClip.Bind( wx.EVT_BUTTON, self.OnButtonDoClipClicked )
 		self.m_buttonGenerate.Bind( wx.EVT_BUTTON, self.OnButtonGenerateClicked )
 		self.m_buttonClearSrcImageListBox.Bind( wx.EVT_BUTTON, self.OnButtonClearSrcImageListBoxClicked )
@@ -245,7 +250,10 @@ class MainDialog ( wx.Dialog ):
 
 
 	# Virtual event handlers, override them in your derived class
-	def OnFilePickerLoadClipInfoFileChanged( self, event ):
+	def OnButtonAddProcessFilesClicked( self, event ):
+		event.Skip()
+
+	def OnButtonLoadClipInfoFileClicked( self, event ):
 		event.Skip()
 
 	def OnButtonDoClipClicked( self, event ):

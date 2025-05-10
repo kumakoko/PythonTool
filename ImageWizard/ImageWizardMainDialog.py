@@ -31,25 +31,71 @@ class ImageWizardMainDialog(MainDialog.MainDialog):
         self.m_listCtrlClipInfo.InsertColumn(3, u"图块宽度", width=60)
         self.m_listCtrlClipInfo.InsertColumn(4, u"图块高度", width=60)
 
-    def OnFilePickerLoadClipInfoFileChanged(self, event):
-        print("OnFilePickerLoadClipInfoFileChanged")
-        # 假设JSON文件名为 rectangles.json
-        file_path = self.m_filePickerLoadClipInfoFile.GetPath()
-        json_data = ImageClipInfoJsonReader.ReadJsonFile(file_path)
+    # 点击【<-添加已处理图片】按钮
+    def OnButtonAddProcessFilesClicked(self, event):
+        # 弹出文件选择对话框
+        with wx.FileDialog(self, "选择图片文件", wildcard="图片文件 (*.png)|*.png",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST | wx.FD_MULTIPLE) as file_dialog:
+            if file_dialog.ShowModal() == wx.ID_CANCEL:
+                return
 
-        if json_data:
-            print("成功读取JSON数据:")
-            for idx, item in enumerate(json_data, 1):
-                row = self.m_listCtrlClipInfo.InsertItem(idx, str(idx + 1))  # ID列
-                self.m_listCtrlClipInfo.SetItem(row, 0, item['name'])
-                self.m_listCtrlClipInfo.SetItem(row, 1, str(item['left_top_x']))
-                self.m_listCtrlClipInfo.SetItem(row, 2, str(item['left_top_y']))
-                self.m_listCtrlClipInfo.SetItem(row, 3, str(item['width']))
-                self.m_listCtrlClipInfo.SetItem(row, 4, str(item['height']))
+            output_file_paths = file_dialog.GetPaths() # 获取选择的文件路径
+            for path in output_file_paths:
+                self.m_listBoxOutputFiles.Append(path)
 
 
+    # 点击【打开图片裁切信息文件->】按钮
+    def OnButtonLoadClipInfoFileClicked(self, event):
+        # 弹出文件选择对话框
+        with wx.FileDialog(self, "选择JSON文件", wildcard="JSON文件 (*.json|*.json",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as file_dialog:
+            if file_dialog.ShowModal() == wx.ID_CANCEL:
+                return
+
+            file_path = file_dialog.GetPath()  # 获取选择的文件路径
+            json_data = ImageClipInfoJsonReader.ReadJsonFile(file_path)
+
+            if json_data:
+                # self.m_listCtrlClipInfo.ClearAll() # 这函数会把表头也清空了
+                self.m_listCtrlClipInfo.DeleteAllItems()
+                for idx, item in enumerate(json_data, 1):
+                    row = self.m_listCtrlClipInfo.InsertItem(idx, str(idx + 1))  # ID列
+                    self.m_listCtrlClipInfo.SetItem(row, 0, item['name'])
+                    self.m_listCtrlClipInfo.SetItem(row, 1, str(item['left_top_x']))
+                    self.m_listCtrlClipInfo.SetItem(row, 2, str(item['left_top_y']))
+                    self.m_listCtrlClipInfo.SetItem(row, 3, str(item['width']))
+                    self.m_listCtrlClipInfo.SetItem(row, 4, str(item['height']))
+
+
+    # 【点击执行切片】
     def OnButtonDoClipClicked(self, event):
-        print("OnButtonDoClipClicked")
+        entire_img_path = self.m_listBoxOutputFiles.GetStringSelection()  # 获取第一个选中行的索引
+
+        if not entire_img_path:
+            return
+
+        entire_img_dir = os.path.dirname(entire_img_path) # 原图片的所在目录
+        row_count = self.m_listCtrlClipInfo.GetItemCount()
+        col_count = self.m_listCtrlClipInfo.GetColumnCount()
+        entire_img = ImageTools.get_rgba_img(entire_img_path)
+
+        if entire_img == None:
+            return
+
+        for row in range(row_count):
+            row_data = []
+            for col in range(col_count):
+                item_text = self.m_listCtrlClipInfo.GetItemText(row, col)
+                row_data.append(item_text)
+
+            # 读取到参数，准备切片并保存图片
+            tile_file_path = os.path.normpath(os.path.join(entire_img_dir, row_data[0]+".png"))
+            left_top_x = int(row_data[1])
+            left_top_y = int(row_data[2])
+            width = int(row_data[3])
+            height = int(row_data[4])
+            ImageTools.crop_one_tile_from_entire_image(entire_img,left_top_x,left_top_y,width,height,tile_file_path)
+
+        wx.MessageBox("对图片切片执行完毕！", "OK", wx.OK)
+
 
     def OnButtonGenerateClicked(self, event):
         print("click=========")
