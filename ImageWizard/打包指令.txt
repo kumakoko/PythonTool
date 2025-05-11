@@ -1,0 +1,1 @@
+ pyinstaller --distpath ./ImageWizardBin --workpath ../PythonToolTemp --windowed --clean ./ImageWizard/main.py
