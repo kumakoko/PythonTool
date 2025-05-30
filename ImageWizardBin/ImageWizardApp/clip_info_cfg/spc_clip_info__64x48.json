@@ -1,0 +1,38 @@
+[
+  {
+    "name": "defend_down_0",
+    "left_top_x": 0,
+    "left_top_y": 0,
+    "width": 48,
+    "height": 48
+  },
+  {
+    "name": "defend_up_0",
+    "left_top_x": 0,
+    "left_top_y": 48,
+    "width": 48,
+    "height": 48
+  },
+  {
+    "name": "defend_left_0",
+    "left_top_x": 0,
+    "left_top_y": 96,
+    "width": 48,
+    "height": 48
+  },
+  {
+    "name": "hit_0",
+    "left_top_x": 0,
+    "left_top_y": 144,
+    "width": 48,
+    "height": 48
+  },
+
+  {
+    "name": "cheer_0",
+    "left_top_x": 0,
+    "left_top_y": 192,
+    "width": 48,
+    "height": 48
+  }
+]
