@@ -10,6 +10,11 @@ import ImageClipInfoJsonReader
 
 
 # Implementing MainDialog
+def GetColorTupleFromPicker(color_picker):
+    c = color_picker.GetColour()
+    return c.GetRed(), c.GetGreen(), c.GetBlue()
+
+
 class ImageWizardMainDialog(MainDialog.MainDialog):
     def __init__(self, parent):
         MainDialog.MainDialog.__init__(self, parent)
@@ -34,19 +39,20 @@ class ImageWizardMainDialog(MainDialog.MainDialog):
     # 点击【<-添加已处理图片】按钮
     def OnButtonAddProcessFilesClicked(self, event):
         # 弹出文件选择对话框
-        with wx.FileDialog(self, "选择图片文件", wildcard="图片文件 (*.png)|*.png",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST | wx.FD_MULTIPLE) as file_dialog:
+        with wx.FileDialog(self, "选择图片文件", wildcard="图片文件 (*.png)|*.png",
+                           style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST | wx.FD_MULTIPLE) as file_dialog:
             if file_dialog.ShowModal() == wx.ID_CANCEL:
                 return
 
-            output_file_paths = file_dialog.GetPaths() # 获取选择的文件路径
+            output_file_paths = file_dialog.GetPaths()  # 获取选择的文件路径
             for path in output_file_paths:
                 self.m_listBoxOutputFiles.Append(path)
-
 
     # 点击【打开图片裁切信息文件->】按钮
     def OnButtonLoadClipInfoFileClicked(self, event):
         # 弹出文件选择对话框
-        with wx.FileDialog(self, "选择JSON文件", wildcard="JSON文件 (*.json|*.json",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as file_dialog:
+        with wx.FileDialog(self, "选择JSON文件", wildcard="JSON文件 (*.json|*.json",
+                           style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as file_dialog:
             if file_dialog.ShowModal() == wx.ID_CANCEL:
                 return
 
@@ -64,7 +70,6 @@ class ImageWizardMainDialog(MainDialog.MainDialog):
                     self.m_listCtrlClipInfo.SetItem(row, 3, str(item['width']))
                     self.m_listCtrlClipInfo.SetItem(row, 4, str(item['height']))
 
-
     # 【点击执行切片】
     def OnButtonDoClipClicked(self, event):
         entire_img_path = self.m_listBoxOutputFiles.GetStringSelection()  # 获取第一个选中行的索引
@@ -72,12 +77,12 @@ class ImageWizardMainDialog(MainDialog.MainDialog):
         if not entire_img_path:
             return
 
-        entire_img_dir = os.path.dirname(entire_img_path) # 原图片的所在目录
+        entire_img_dir = os.path.dirname(entire_img_path)  # 原图片的所在目录
         row_count = self.m_listCtrlClipInfo.GetItemCount()
         col_count = self.m_listCtrlClipInfo.GetColumnCount()
         entire_img = ImageTools.get_rgba_img(entire_img_path)
 
-        if entire_img == None:
+        if entire_img is None:
             return
 
         for row in range(row_count):
@@ -87,15 +92,15 @@ class ImageWizardMainDialog(MainDialog.MainDialog):
                 row_data.append(item_text)
 
             # 读取到参数，准备切片并保存图片
-            tile_file_path = os.path.normpath(os.path.join(entire_img_dir, row_data[0]+".png"))
+            tile_file_path = os.path.normpath(os.path.join(entire_img_dir, row_data[0] + ".png"))
             left_top_x = int(row_data[1])
             left_top_y = int(row_data[2])
             width = int(row_data[3])
             height = int(row_data[4])
-            ImageTools.crop_one_tile_from_entire_image(entire_img,left_top_x,left_top_y,width,height,tile_file_path)
+            ImageTools.crop_one_tile_from_entire_image(entire_img, left_top_x, left_top_y, width, height,
+                                                       tile_file_path)
 
         wx.MessageBox("对图片切片执行完毕！", "OK", wx.OK)
-
 
     def OnButtonGenerateClicked(self, event):
         print("click=========")
@@ -130,7 +135,8 @@ class ImageWizardMainDialog(MainDialog.MainDialog):
         self.m_ImageViewAndGrid.RefreshWindow()
 
     def OnImageViewGridLineColorChanged(self, event):
-        self.m_ImageViewAndGrid.SetGridLineColor(self.m_colourPickerGridLine.GetColour()) #self.m_colourPickerGridLine.GetValue())
+        self.m_ImageViewAndGrid.SetGridLineColor(
+            self.m_colourPickerGridLine.GetColour())  # self.m_colourPickerGridLine.GetValue())
         self.m_ImageViewAndGrid.RefreshWindow()
 
     # 点击裁剪按钮
@@ -141,15 +147,15 @@ class ImageWizardMainDialog(MainDialog.MainDialog):
         tile_width = self.GetSplitCellWidth()
         tile_height = self.GetSplitCellHeight()
         output_dir = self.GetSplitCellImageOutputPath()
-        #output_dir = "D:/MyProjects/SaveYueFei/Arts/battle_scene/battle_scene_100"
+        # output_dir = "D:/MyProjects/SaveYueFei/Arts/battle_scene/battle_scene_100"
         img = ImageTools.get_rgba_img(self.GetViewAndGridImageFilePath())
-        #img = ImageTools.get_rgba_img("E:/download/Tile-AA.png")
+        # img = ImageTools.get_rgba_img("E:/download/Tile-AA.png")
         ImageTools.split_image_into_tiles(img, tile_width, tile_height, split_cell_name, output_dir)
         wx.MessageBox("完成分割图片！", "OK", wx.OK)
 
-
     def GetViewAndGridImageFilePath(self):
         return self.m_filePickerLoadImageForViewAndGrid.GetPath()
+
     def GetSplitCellWidth(self):
         return int(self.m_textCtrlSplitCellWidth.GetValue())
 
@@ -168,14 +174,10 @@ class ImageWizardMainDialog(MainDialog.MainDialog):
 
     def GetScaleValue(self):
         try:
-            return int(self.m_textCtrlScale.GetValue())
+            return float(self.m_textCtrlScale.GetValue())
         except Exception as e:
             print(f"转换失败，发生错误：{e},将会返回缩放值1")
             return 1
-
-    def GetColorTupleFromPicker(self,color_picker):
-        c = color_picker.GetColour()
-        return (c.GetRed(),c.GetGreen(),c.GetBlue())
 
     # 生成新的图片
     def GenerateNewImage(self):
@@ -184,11 +186,19 @@ class ImageWizardMainDialog(MainDialog.MainDialog):
         for i in range(img_count):
             srcImagePath = self.m_listBoxSrcImage.GetString(i)
             print(f"第 {i} 项:", srcImagePath)
-            transparent_color = self.GetColorTupleFromPicker(self.m_colourPickerTransparent)
+            transparent_color = GetColorTupleFromPicker(self.m_colourPickerTransparent)
             scale = self.GetScaleValue()
             file_name_base = ImageTools.get_filename_without_extension(srcImagePath)
-            rgba_img = ImageTools.convert_to_rgba_with_transparency(srcImagePath, transparent_color, scale)
+
+            # 在这里 self.m_checkBoxUseTransparentColor
+            result_img = None
+
+            if self.m_checkBoxUseTransparentColor.IsChecked():
+                result_img = ImageTools.convert_to_rgba_with_transparency(srcImagePath, transparent_color, scale)
+            else:
+                result_img = ImageTools.resize_image(srcImagePath, scale)
+
             output_dir = self.m_dirPickerOutputDir.GetPath()
             output_file_path = os.path.join(output_dir, file_name_base + self.m_comboBoxSuffix.GetValue())
             self.m_listBoxOutputFiles.Append(output_file_path)
-            rgba_img.save(output_file_path, format="png")
+            result_img.save(output_file_path, format="png")

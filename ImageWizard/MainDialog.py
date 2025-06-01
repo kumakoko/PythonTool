@@ -50,6 +50,10 @@ class MainDialog ( wx.Dialog ):
 		self.m_colourPickerTransparent = wx.ColourPickerCtrl( self.m_panelBatchConvert, wx.ID_ANY, wx.BLACK, wx.DefaultPosition, wx.DefaultSize, wx.CLRP_DEFAULT_STYLE )
 		bSizer11.Add( self.m_colourPickerTransparent, 0, wx.ALL, 5 )
 
+		self.m_checkBoxUseTransparentColor = wx.CheckBox( self.m_panelBatchConvert, wx.ID_ANY, u"启用透明色", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_checkBoxUseTransparentColor.SetValue(True)
+		bSizer11.Add( self.m_checkBoxUseTransparentColor, 0, wx.ALL, 5 )
+
 		self.m_staticText4 = wx.StaticText( self.m_panelBatchConvert, wx.ID_ANY, u"设置输出放大倍数", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText4.Wrap( -1 )
 
@@ -227,6 +231,7 @@ class MainDialog ( wx.Dialog ):
 		self.Centre( wx.BOTH )
 
 		# Connect Events
+		self.m_checkBoxUseTransparentColor.Bind( wx.EVT_CHECKBOX, self.OnUseTransparentsChecked )
 		self.m_buttonAddProcessFiles.Bind( wx.EVT_BUTTON, self.OnButtonAddProcessFilesClicked )
 		self.m_buttonLoadClipInfoFile.Bind( wx.EVT_BUTTON, self.OnButtonLoadClipInfoFileClicked )
 		self.m_buttonDoClip.Bind( wx.EVT_BUTTON, self.OnButtonDoClipClicked )
@@ -250,6 +255,9 @@ class MainDialog ( wx.Dialog ):
 
 
 	# Virtual event handlers, override them in your derived class
+	def OnUseTransparentsChecked( self, event ):
+		event.Skip()
+
 	def OnButtonAddProcessFilesClicked( self, event ):
 		event.Skip()
 

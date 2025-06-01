@@ -73,24 +73,3 @@ class ImageViewAndGrid:
         # 绘制水平线（每隔h_interval像素）
         for y in range(0, height, self.h_interval):
             dc.DrawLine(0, y, width, y)
-
-
-# 使用示例
-class MainFrame(wx.Frame):
-    def __init__(self):
-        super().__init__(None, title="图片查看器（组合模式）", size=(800, 600))
-
-        # 直接创建ImageViewer实例（不需要Panel）
-        self.viewer = ImageViewer(self, "example.jpg", 50, 50)
-
-        # 布局（可选：如果需要其他控件，可以用Sizer）
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(self.viewer.scrolled_win, 1, wx.EXPAND)
-        self.SetSizer(sizer)
-
-
-if __name__ == "__main__":
-    app = wx.App()
-    frame = MainFrame()
-    frame.Show()
-    app.MainLoop()

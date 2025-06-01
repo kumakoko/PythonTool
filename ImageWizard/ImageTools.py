@@ -5,6 +5,7 @@ import argparse
 import ast
 import os
 
+
 # 获取文件路径的后缀名，带点好，例如 .txt
 def get_file_extension(file_path):
     _, extension = os.path.splitext(file_path)
@@ -24,6 +25,7 @@ def convert_to_rgb(file_path):
         rgb_img = img.convert("RGB")
         print("已将图像转换为24位RGB格式")
         return rgb_img
+
 
 def get_rgba_img(img_file_path):
     with Image.open(img_file_path) as img:
@@ -51,6 +53,17 @@ def get_rgba_img(img_file_path):
         else:
             print(f"图像格式未知或不支持的模式: {img.mode}")
             return None
+
+
+# img_file_path 图片文件的路径名
+# scale 新图片的放大倍数
+def resize_image(img_file_path, scale):
+    img = Image.open(img_file_path)
+    if scale != 1:
+        nw = int(img.width * scale)
+        nh = int(img.height * scale)
+        img = img.resize((nw, nh), Image.NEAREST)
+    return img
 
 
 # 将指定的图片，转换为32位RGBA格式的图，当像素为指定的透明色transparent_color时，该像素点设置为true
@@ -91,8 +104,8 @@ def convert_to_rgba_with_transparency(img_file_path, transparent_color=(255, 255
                 pixels[x, y] = (r, g, b, 255)  # 其他颜色的Alpha设为255
 
     if scale != 1:
-        nw = rgba_img.width * scale
-        nh = rgba_img.height * scale
+        nw = int(rgba_img.width * scale)
+        nh = int(rgba_img.height * scale)
         rgba_img = rgba_img.resize((nw, nh), Image.NEAREST)
 
     print(f"已将图像转换为32位RGBA格式，并将颜色{transparent_color}设置为透明")
@@ -194,9 +207,9 @@ def convert_single_file(input_file, output_file, transparent_color, scale):
 
 # 从一张大图片中切出一块图片出来并保存
 # entire_img 整块图片的img
-def crop_one_tile_from_entire_image(entire_img,left_top_x,left_top_y,tile_w,tile_h,tile_file_path):
+def crop_one_tile_from_entire_image(entire_img, left_top_x, left_top_y, tile_w, tile_h, tile_file_path):
     # 切割图块
-    tile_img = entire_img.crop((left_top_x, left_top_y, left_top_x+tile_w, left_top_y+tile_h))
+    tile_img = entire_img.crop((left_top_x, left_top_y, left_top_x + tile_w, left_top_y + tile_h))
     tile_img.save(tile_file_path)
 
 
