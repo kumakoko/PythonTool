@@ -1,1 +1,2 @@
- pyinstaller --distpath ./ImageWizardBin --workpath ../PythonToolTemp --windowed --clean ./ImageWizard/main.py
+cd D:\MyProjects\PythonTool
+pyinstaller --distpath ./ImageWizardBin --workpath ./PythonToolTemp --clean ImageWizardApp.spec

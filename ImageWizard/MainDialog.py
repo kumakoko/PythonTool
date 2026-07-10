@@ -17,7 +17,7 @@ import wx.xrc
 class MainDialog ( wx.Dialog ):
 
 	def __init__( self, parent ):
-		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"ImageWizard--图片处理百宝箱", pos = wx.DefaultPosition, size = wx.Size( 1039,705 ), style = wx.DEFAULT_DIALOG_STYLE|wx.MINIMIZE_BOX )
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"ImageWizard--图片处理百宝箱", pos = wx.DefaultPosition, size = wx.Size( 1039,751 ), style = wx.DEFAULT_DIALOG_STYLE|wx.MINIMIZE_BOX )
 
 		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
 		self.SetExtraStyle( wx.DIALOG_EX_METAL )
@@ -92,6 +92,20 @@ class MainDialog ( wx.Dialog ):
 
 		self.m_buttonLoadClipInfoFile = wx.Button( self.m_panelBatchConvert, wx.ID_ANY, u"打开图片裁切信息文件->", wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer92.Add( self.m_buttonLoadClipInfoFile, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
+
+		bSizer191 = wx.BoxSizer( wx.HORIZONTAL )
+
+		self.m_staticText20 = wx.StaticText( self.m_panelBatchConvert, wx.ID_ANY, u"切片类型", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText20.Wrap( -1 )
+
+		bSizer191.Add( self.m_staticText20, 0, wx.ALL, 5 )
+
+		m_comboBoxClipInfoChoices = []
+		self.m_comboBoxClipInfo = wx.ComboBox( self.m_panelBatchConvert, wx.ID_ANY, u"Combo!", wx.DefaultPosition, wx.DefaultSize, m_comboBoxClipInfoChoices, 0 )
+		bSizer191.Add( self.m_comboBoxClipInfo, 0, wx.ALL, 5 )
+
+
+		bSizer92.Add( bSizer191, 1, wx.EXPAND, 5 )
 
 		self.m_buttonDoClip = wx.Button( self.m_panelBatchConvert, wx.ID_ANY, u"执行切片", wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer92.Add( self.m_buttonDoClip, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
@@ -221,6 +235,127 @@ class MainDialog ( wx.Dialog ):
 		self.m_panelImageViewAndGrid.Layout()
 		bSizer91.Fit( self.m_panelImageViewAndGrid )
 		self.m_notebook5.AddPage( self.m_panelImageViewAndGrid, u"预览图片和网格", False )
+		self.m_panelTextImageGenerator = wx.Panel( self.m_notebook5, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bSizer10 = wx.BoxSizer( wx.HORIZONTAL )
+
+		bSizer29 = wx.BoxSizer( wx.VERTICAL )
+
+		m_sizerTextImageWH = wx.BoxSizer( wx.HORIZONTAL )
+
+		self.m_staticText14 = wx.StaticText( self.m_panelTextImageGenerator, wx.ID_ANY, u"图片高度", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText14.Wrap( -1 )
+
+		m_sizerTextImageWH.Add( self.m_staticText14, 0, wx.ALL, 5 )
+
+		self.m_TextImageHeight = wx.TextCtrl( self.m_panelTextImageGenerator, wx.ID_ANY, u"96", wx.DefaultPosition, wx.DefaultSize, 0 )
+		m_sizerTextImageWH.Add( self.m_TextImageHeight, 0, wx.ALL, 5 )
+
+		self.m_staticText15 = wx.StaticText( self.m_panelTextImageGenerator, wx.ID_ANY, u"图片宽度", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText15.Wrap( -1 )
+
+		m_sizerTextImageWH.Add( self.m_staticText15, 0, wx.ALL, 5 )
+
+		self.m_TextImageWidth = wx.TextCtrl( self.m_panelTextImageGenerator, wx.ID_ANY, u"96", wx.DefaultPosition, wx.DefaultSize, 0 )
+		m_sizerTextImageWH.Add( self.m_TextImageWidth, 0, wx.ALL, 5 )
+
+		self.m_staticText26 = wx.StaticText( self.m_panelTextImageGenerator, wx.ID_ANY, u"字号", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText26.Wrap( -1 )
+
+		m_sizerTextImageWH.Add( self.m_staticText26, 0, wx.ALL, 5 )
+
+		self.m_textFontSize = wx.TextCtrl( self.m_panelTextImageGenerator, wx.ID_ANY, u"12", wx.DefaultPosition, wx.DefaultSize, 0 )
+		m_sizerTextImageWH.Add( self.m_textFontSize, 0, wx.ALL, 5 )
+
+
+		bSizer29.Add( m_sizerTextImageWH, 1, wx.EXPAND, 5 )
+
+		m_sizerTextImageAlign = wx.BoxSizer( wx.HORIZONTAL )
+
+		m_radioTextImageAlignHChoices = [ u"靠左", u"居中", u"靠右" ]
+		self.m_radioTextImageAlignH = wx.RadioBox( self.m_panelTextImageGenerator, wx.ID_ANY, u"文字水平方向对齐", wx.DefaultPosition, wx.DefaultSize, m_radioTextImageAlignHChoices, 1, wx.RA_SPECIFY_COLS )
+		self.m_radioTextImageAlignH.SetSelection( 0 )
+		m_sizerTextImageAlign.Add( self.m_radioTextImageAlignH, 0, wx.ALL, 5 )
+
+		m_radioTextImageAlignWChoices = [ u"靠上", u"居中", u"靠下" ]
+		self.m_radioTextImageAlignW = wx.RadioBox( self.m_panelTextImageGenerator, wx.ID_ANY, u"文字垂直方向对齐", wx.DefaultPosition, wx.DefaultSize, m_radioTextImageAlignWChoices, 1, wx.RA_SPECIFY_COLS )
+		self.m_radioTextImageAlignW.SetSelection( 0 )
+		m_sizerTextImageAlign.Add( self.m_radioTextImageAlignW, 0, wx.ALL, 5 )
+
+
+		bSizer29.Add( m_sizerTextImageAlign, 1, wx.EXPAND, 5 )
+
+		bSizer19 = wx.BoxSizer( wx.VERTICAL )
+
+		bSizer17 = wx.BoxSizer( wx.HORIZONTAL )
+
+		self.m_staticText16 = wx.StaticText( self.m_panelTextImageGenerator, wx.ID_ANY, u"输入文字内容", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText16.Wrap( -1 )
+
+		bSizer17.Add( self.m_staticText16, 0, wx.ALL, 5 )
+
+		self.m_textSingleTextContent = wx.TextCtrl( self.m_panelTextImageGenerator, wx.ID_ANY, u"碧血照丹心", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer17.Add( self.m_textSingleTextContent, 0, wx.ALL, 5 )
+
+		self.m_btnGenerateSingleTextImage = wx.Button( self.m_panelTextImageGenerator, wx.ID_ANY, u"生成单张文字图片", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer17.Add( self.m_btnGenerateSingleTextImage, 0, wx.ALL, 5 )
+
+
+		bSizer19.Add( bSizer17, 1, wx.EXPAND, 5 )
+
+		bSizer18 = wx.BoxSizer( wx.HORIZONTAL )
+
+		self.m_staticText17 = wx.StaticText( self.m_panelTextImageGenerator, wx.ID_ANY, u"指定输出目录和文件名", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText17.Wrap( -1 )
+
+		bSizer18.Add( self.m_staticText17, 0, wx.ALL, 5 )
+
+		self.m_filePickerOutputSingleTextImage = wx.FilePickerCtrl( self.m_panelTextImageGenerator, wx.ID_ANY, wx.EmptyString, u"Select a file", u"*.*", wx.DefaultPosition, wx.DefaultSize, wx.FLP_DEFAULT_STYLE )
+		bSizer18.Add( self.m_filePickerOutputSingleTextImage, 0, wx.ALL, 5 )
+
+
+		bSizer19.Add( bSizer18, 1, wx.EXPAND, 5 )
+
+		bSizer20 = wx.BoxSizer( wx.HORIZONTAL )
+
+		self.m_staticText18 = wx.StaticText( self.m_panelTextImageGenerator, wx.ID_ANY, u"选择图片背景颜色", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText18.Wrap( -1 )
+
+		bSizer20.Add( self.m_staticText18, 0, wx.ALL, 5 )
+
+		self.m_colourPickerImageBG = wx.ColourPickerCtrl( self.m_panelTextImageGenerator, wx.ID_ANY, wx.Colour( 255, 255, 255 ), wx.DefaultPosition, wx.DefaultSize, wx.CLRP_DEFAULT_STYLE )
+		bSizer20.Add( self.m_colourPickerImageBG, 0, wx.ALL, 5 )
+
+		self.m_staticText19 = wx.StaticText( self.m_panelTextImageGenerator, wx.ID_ANY, u"选择文字颜色", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText19.Wrap( -1 )
+
+		bSizer20.Add( self.m_staticText19, 0, wx.ALL, 5 )
+
+		self.m_colourPickerTextColor = wx.ColourPickerCtrl( self.m_panelTextImageGenerator, wx.ID_ANY, wx.BLACK, wx.DefaultPosition, wx.DefaultSize, wx.CLRP_DEFAULT_STYLE )
+		bSizer20.Add( self.m_colourPickerTextColor, 0, wx.ALL, 5 )
+
+
+		bSizer19.Add( bSizer20, 1, wx.EXPAND, 5 )
+
+
+		bSizer29.Add( bSizer19, 1, wx.EXPAND, 5 )
+
+
+		bSizer10.Add( bSizer29, 1, wx.EXPAND, 5 )
+
+		bSizer30 = wx.BoxSizer( wx.VERTICAL )
+
+		m_listBox3Choices = []
+		self.m_listBox3 = wx.ListBox( self.m_panelTextImageGenerator, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, m_listBox3Choices, 0 )
+		bSizer30.Add( self.m_listBox3, 0, wx.ALL, 5 )
+
+
+		bSizer10.Add( bSizer30, 1, wx.EXPAND, 5 )
+
+
+		self.m_panelTextImageGenerator.SetSizer( bSizer10 )
+		self.m_panelTextImageGenerator.Layout()
+		bSizer10.Fit( self.m_panelTextImageGenerator )
+		self.m_notebook5.AddPage( self.m_panelTextImageGenerator, u"文字图片生成器", False )
 
 		bSizer3.Add( self.m_notebook5, 1, wx.EXPAND |wx.ALL, 5 )
 
@@ -249,6 +384,7 @@ class MainDialog ( wx.Dialog ):
 		self.m_textCtrlCellOutputScale.Bind( wx.EVT_TEXT_ENTER, self.OnTextCtrlViewGridHeightTextEnter )
 		self.m_textCtrlSplitCellName.Bind( wx.EVT_TEXT_ENTER, self.OnTextCtrlViewGridWidthTextEnter )
 		self.m_buttonSplitImage.Bind( wx.EVT_BUTTON, self.OnButtonSplitImageClicked )
+		self.m_btnGenerateSingleTextImage.Bind( wx.EVT_BUTTON, self.OnButtonClickGenerateSingleTextImage )
 
 	def __del__( self ):
 		pass
@@ -299,6 +435,9 @@ class MainDialog ( wx.Dialog ):
 
 
 	def OnButtonSplitImageClicked( self, event ):
+		event.Skip()
+
+	def OnButtonClickGenerateSingleTextImage( self, event ):
 		event.Skip()
 
 

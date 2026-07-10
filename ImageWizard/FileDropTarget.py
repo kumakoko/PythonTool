@@ -1,13 +1,20 @@
 import wx
+import os
 
 
 class FileDropTarget(wx.FileDropTarget):
-    def __init__(self, listbox):
+    def __init__(self, listbox, dir_picker=None):
         super().__init__()
-        self.listbox = listbox  # 关联的 ListBox
+        self.listbox = listbox
+        self.dir_picker = dir_picker
 
-    # OnDropFiles 是核心方法，参数 filenames 是拖放的文件路径列表。
     def OnDropFiles(self, x, y, filenames):
         for file in filenames:
-            self.listbox.Append(file)  # 将文件路径添加到 ListBox
-        return True  # 返回 True 表示处理成功
+            self.listbox.Append(file)
+
+        if filenames and self.dir_picker:
+            first_file_path = filenames[0]
+            dir_path = os.path.dirname(first_file_path)
+            self.dir_picker.SetPath(dir_path)
+
+        return True

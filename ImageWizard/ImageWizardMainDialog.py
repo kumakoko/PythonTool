@@ -7,7 +7,7 @@ import FileDropTarget
 import ImageTools
 import ImageViewAndGrid
 import ImageClipInfoJsonReader
-
+from PIL import Image, ImageDraw, ImageFont
 
 # Implementing MainDialog
 def GetColorTupleFromPicker(color_picker):
@@ -18,15 +18,18 @@ def GetColorTupleFromPicker(color_picker):
 class ImageWizardMainDialog(MainDialog.MainDialog):
     def __init__(self, parent):
         MainDialog.MainDialog.__init__(self, parent)
-        drop_target = FileDropTarget.FileDropTarget(self.m_listBoxSrcImage)
+        drop_target = FileDropTarget.FileDropTarget(self.m_listBoxSrcImage, self.m_dirPickerOutputDir)
         self.m_listBoxSrcImage.SetDropTarget(drop_target)
         self.m_comboBoxSuffix.Append(".png")
         self.m_comboBoxSuffix.Append(".tga")
         self.m_comboBoxSuffix.Append(".jpg")
         self.m_comboBoxSuffix.Append(".bmp")
-        self.m_comboBoxSuffix.SetValue(".png")  # 直接设置显示文本
+        self.m_comboBoxSuffix.SetValue(".png")
         self.m_ImageViewAndGrid = ImageViewAndGrid.ImageViewAndGrid(self.m_scrolledWindowImageViewAndGrid)
         self._InitClipInfoListControl()
+        self.m_clipInfoData = {}
+        self.m_comboBoxClipInfo.Bind(wx.EVT_COMBOBOX, self.OnComboBoxClipInfoSelected)
+        self.m_colourPickerTransparent.SetColour(wx.Colour(247, 0, 255))
 
     def _InitClipInfoListControl(self):
         # 获取HeaderCtrl并设置属性
@@ -50,25 +53,38 @@ class ImageWizardMainDialog(MainDialog.MainDialog):
 
     # 点击【打开图片裁切信息文件->】按钮
     def OnButtonLoadClipInfoFileClicked(self, event):
-        # 弹出文件选择对话框
-        with wx.FileDialog(self, "选择JSON文件", wildcard="JSON文件 (*.json|*.json",
+        with wx.FileDialog(self, "选择JSON文件", wildcard="JSON文件 (*.json)|*.json",
                            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as file_dialog:
             if file_dialog.ShowModal() == wx.ID_CANCEL:
                 return
 
-            file_path = file_dialog.GetPath()  # 获取选择的文件路径
-            json_data = ImageClipInfoJsonReader.ReadJsonFile(file_path)
+            file_path = file_dialog.GetPath()
+            self.m_clipInfoData = ImageClipInfoJsonReader.ReadClipInfoJsonFile(file_path)
 
-            if json_data:
-                # self.m_listCtrlClipInfo.ClearAll() # 这函数会把表头也清空了
-                self.m_listCtrlClipInfo.DeleteAllItems()
-                for idx, item in enumerate(json_data, 1):
-                    row = self.m_listCtrlClipInfo.InsertItem(idx, str(idx + 1))  # ID列
-                    self.m_listCtrlClipInfo.SetItem(row, 0, item['name'])
-                    self.m_listCtrlClipInfo.SetItem(row, 1, str(item['left_top_x']))
-                    self.m_listCtrlClipInfo.SetItem(row, 2, str(item['left_top_y']))
-                    self.m_listCtrlClipInfo.SetItem(row, 3, str(item['width']))
-                    self.m_listCtrlClipInfo.SetItem(row, 4, str(item['height']))
+            if self.m_clipInfoData:
+                self.m_comboBoxClipInfo.Clear()
+                for clip_type in self.m_clipInfoData.keys():
+                    self.m_comboBoxClipInfo.Append(clip_type)
+
+                if self.m_comboBoxClipInfo.GetCount() > 0:
+                    self.m_comboBoxClipInfo.SetSelection(0)
+                    self._LoadClipInfoToGrid(self.m_clipInfoData[self.m_comboBoxClipInfo.GetValue()])
+
+    # 组合框选择切片类型事件
+    def OnComboBoxClipInfoSelected(self, event):
+        selected_type = self.m_comboBoxClipInfo.GetValue()
+        if selected_type and selected_type in self.m_clipInfoData:
+            self._LoadClipInfoToGrid(self.m_clipInfoData[selected_type])
+
+    def _LoadClipInfoToGrid(self, clip_info_list):
+        self.m_listCtrlClipInfo.DeleteAllItems()
+        for idx, item in enumerate(clip_info_list):
+            row = self.m_listCtrlClipInfo.InsertItem(idx, item['name'])
+            self.m_listCtrlClipInfo.SetItem(row, 0, item['name'])
+            self.m_listCtrlClipInfo.SetItem(row, 1, str(item['left_top_x']))
+            self.m_listCtrlClipInfo.SetItem(row, 2, str(item['left_top_y']))
+            self.m_listCtrlClipInfo.SetItem(row, 3, str(item['width']))
+            self.m_listCtrlClipInfo.SetItem(row, 4, str(item['height']))
 
     # 【点击执行切片】
     def OnButtonDoClipClicked(self, event):
@@ -152,6 +168,121 @@ class ImageWizardMainDialog(MainDialog.MainDialog):
         # img = ImageTools.get_rgba_img("E:/download/Tile-AA.png")
         ImageTools.split_image_into_tiles(img, tile_width, tile_height, split_cell_name, output_dir)
         wx.MessageBox("完成分割图片！", "OK", wx.OK)
+
+    # 生成文字图片
+    def OnButtonClickGenerateSingleTextImage(self, event):
+        self.generate_text_image()
+        self.on_save_text_image()
+
+    def wrap_text(self, text, font, max_width):
+        """将文本换行以适应最大宽度"""
+        words = text.split()
+        lines = []
+        current_line = []
+
+        # 创建一个临时ImageDraw对象来测量文本
+        temp_image = Image.new('RGB', (1, 1))
+        temp_draw = ImageDraw.Draw(temp_image)
+
+        for word in words:
+            test_line = ' '.join(current_line + [word])
+            bbox = temp_draw.textbbox((0, 0), test_line, font=font)
+            line_width = bbox[2] - bbox[0]
+
+            if line_width <= max_width:
+                current_line.append(word)
+            else:
+                if current_line:
+                    lines.append(' '.join(current_line))
+                current_line = [word]
+
+        if current_line:
+            lines.append(' '.join(current_line))
+
+        return lines
+
+    def generate_text_image(self):
+        try:
+            # 获取输入参数
+            width = int(self.m_TextImageWidth.GetValue())  # 图片高
+            height = int(self.m_TextImageHeight.GetValue())
+            font_size = int(self.m_textFontSize.GetValue())
+            text = self.m_textSingleTextContent.GetValue().strip()
+
+            if not text:
+                wx.MessageBox("请输入文字内容", "错误", wx.OK | wx.ICON_ERROR)
+                return
+
+            # 创建图片
+            image = Image.new('RGB', (width, height), color=(255, 255, 255))
+            draw = ImageDraw.Draw(image)
+
+            # 尝试使用系统字体
+            try:
+                font = ImageFont.truetype("simsun.ttf", font_size)
+            except:
+                try:
+                    font = ImageFont.truetype("simsun", font_size)
+                except:
+                    font = ImageFont.load_default()
+
+            # 计算文字位置和自动换行
+            lines = self.wrap_text(text, font, width - 40)  # 留出边距
+
+            # 计算总文本高度
+            total_height = 0
+            line_heights = []
+            for line in lines:
+                bbox = draw.textbbox((0, 0), line, font=font)
+                line_height = bbox[3] - bbox[1]
+                line_heights.append(line_height)
+                total_height += line_height + 5  # 5像素的行间距
+
+            # 垂直居中
+            y = (height - total_height) // 2
+
+            # 绘制每一行文字
+            for i, line in enumerate(lines):
+                bbox = draw.textbbox((0, 0), line, font=font)
+                line_width = bbox[2] - bbox[0]
+                x = (width - line_width) // 2
+                draw.text((x, y), line, font=font, fill=(0, 0, 0))  # self.font_color)
+                y += line_heights[i] + 5  # 行间距
+
+            self.current_image = image
+
+            # 显示预览
+            # image.show()
+
+        except ValueError:
+            wx.MessageBox("请输入有效的数字", "错误", wx.OK | wx.ICON_ERROR)
+        except Exception as e:
+            wx.MessageBox(f"生成图片时出错: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
+
+    def on_save_text_image(self):
+        if self.current_image:
+            with wx.FileDialog(self, "保存图片", wildcard="PNG files (*.png)|*.png|JPEG files (*.jpg)|*.jpg",
+                               style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT) as file_dialog:
+
+                if file_dialog.ShowModal() == wx.ID_CANCEL:
+                    return
+
+                file_path = file_dialog.GetPath()
+                try:
+                    # 根据文件扩展名确定格式
+                    if file_path.lower().endswith('.jpg') or file_path.lower().endswith('.jpeg'):
+                        format = 'JPEG'
+                    else:
+                        format = 'PNG'
+                        if not file_path.lower().endswith('.png'):
+                            file_path += '.png'
+
+                    self.current_image.save(file_path, format=format)
+                    wx.MessageBox(f"图片已保存到: {file_path}", "成功", wx.OK | wx.ICON_INFORMATION)
+                except Exception as e:
+                    wx.MessageBox(f"保存图片时出错: {str(e)}", "错误", wx.OK | wx.ICON_ERROR)
+        else:
+            wx.MessageBox("请先生成图片", "警告", wx.OK | wx.ICON_WARNING)
 
     def GetViewAndGridImageFilePath(self):
         return self.m_filePickerLoadImageForViewAndGrid.GetPath()
