@@ -1,0 +1,2 @@
+cd D:\MyProjects\PythonTool
+python -m PyInstaller --distpath ./GooglePlayCheckerBin --workpath ./GooglePlayCheckerTemp --clean GooglePlayChecker.spec

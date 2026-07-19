@@ -1,2 +1,0 @@
-cd D:\MyProjects\PythonTool
-pyinstaller --distpath ./ImageWizardBin --workpath ./PythonToolTemp --clean ImageWizardApp.spec
