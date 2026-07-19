@@ -17,7 +17,7 @@ import wx.xrc
 class MainDialog ( wx.Dialog ):
 
 	def __init__( self, parent ):
-		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"上架GooglePlay检查工具", pos = wx.DefaultPosition, size = wx.Size( 1039,717 ), style = wx.DEFAULT_DIALOG_STYLE|wx.MINIMIZE_BOX )
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"上架GooglePlay检查工具", pos = wx.DefaultPosition, size = wx.Size( 1039,749 ), style = wx.DEFAULT_DIALOG_STYLE|wx.MINIMIZE_BOX )
 
 		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
 		self.SetExtraStyle( wx.DIALOG_EX_METAL )
