@@ -1,0 +1,2 @@
+cd D:\MyProjects\PythonTool
+python -m PyInstaller --distpath ./BOPExtractorBin --workpath ./BOPExtractorTemp --clean BOPExtractor.spec
